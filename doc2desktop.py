@@ -1,6 +1,7 @@
 import time
 import textwrap
 import ctypes
+import os
 from docx import Document
 from PIL import Image, ImageDraw, ImageFont
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -14,8 +15,12 @@ Features to add:
 """
 # In settings change background fit to 'Fit'
 
-directory = "C:\\Users\\Bryce\\AppData\\Local\\Programs\\Python\\Python311\\d2d\\"
+directory = "C:\\Users\\Admin\\OneDrive\\Documents\\YOUTUBE\\"
 word_docx_file = "desktopbkgd.docx"
+file_path = directory+word_docx_file
+
+state = os.path.getmtime(file_path)
+print(state)
 
 width = 1000
 height = 1000
@@ -79,10 +84,19 @@ def update_desktop_background():
     output_image = text_to_image(text)
     set_wallpaper(output_image)
 
+#state = os.path.getmtime(file_path)
+
+def check_for_updates():
+    global state
+    new_state = os.path.getmtime(file_path)
+    if state != new_state:
+        update_desktop_background()
+    state = new_state
+
 def main():
     scheduler = BackgroundScheduler()
     print('starto!')
-    scheduler.add_job(update_desktop_background, 'interval', seconds=5)  # Run every 5 seconds
+    scheduler.add_job(check_for_updates, 'interval', minutes=1)  # Run every 1 minutes
     scheduler.start()
 
     try:
